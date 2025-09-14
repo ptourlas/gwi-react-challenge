@@ -13,6 +13,8 @@ import {
   Skeleton,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 
 type Breed = { id: string; name: string };
@@ -42,7 +44,10 @@ async function fetchRandomImages({ signal }: { signal?: AbortSignal }) {
 }
 
 export default function Feed() {
+  const theme = useTheme();
   const location = useLocation();
+  const isMediumWidth = useMediaQuery(theme.breakpoints.down("md"));
+  const columnNumber = useMemo(() => (isMediumWidth ? 2 : 3), [isMediumWidth]);
 
   const {
     data,
@@ -103,31 +108,19 @@ export default function Feed() {
         </Alert>
       )}
 
-      {/* Grid of images (with first-load skeletons) */}
-      {isLoading ? (
-        <ImageList variant="masonry" cols={3} gap={8} sx={{ m: 0 }}>
-          {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+      <ImageList variant="masonry" cols={columnNumber} gap={8}>
+        {isLoading
+          ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
             <Box key={`skeleton-${i}`}>
               <Skeleton variant="rounded" height={240} />
             </Box>
-          ))}
-        </ImageList>
-      ) : (
-        <ImageList variant="masonry" cols={3} gap={8} sx={{ m: 0 }}>
-          {images.map((img) => (
+            ))
+          : images.map((img) => (
             <ImageListItem key={img.id}>
               <Box
                 component={Link}
                 to={`/images/${img.id}`}
                 state={{ backgroundLocation: location }}
-                sx={{
-                  display: "block",
-                  borderRadius: 2,
-                  overflow: "hidden",
-                  border: "1px solid",
-                  borderColor: "divider",
-                  "&:hover img": { transform: "scale(1.02)" },
-                }}
               >
                 <Box
                   component="img"
@@ -135,17 +128,14 @@ export default function Feed() {
                   alt="Cat"
                   loading="lazy"
                   sx={{
+                      borderRadius: 2,
                     width: "100%",
-                    height: "auto",
-                    display: "block",
-                    transition: "transform 200ms ease",
                   }}
                 />
               </Box>
             </ImageListItem>
           ))}
         </ImageList>
-      )}
 
       {/* Bottom controls */}
       <Stack alignItems="center" mt={3}>
