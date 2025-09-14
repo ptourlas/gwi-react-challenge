@@ -85,20 +85,19 @@ export default function Feed() {
           Random Cats
         </Typography>
 
-        <Stack direction="row" spacing={1}>
+        {error ? (
+          <Button variant="outlined" color="error" onClick={() => refetch()}>
+            Retry
+          </Button>
+        ) : (
           <Button
             variant="outlined"
-            onClick={() => fetchNextPage()}
+            onClick={() => refetch()}
             disabled={isFetchingNextPage}
           >
-            {isFetchingNextPage ? "Loading…" : "Load more"}
+            {isFetchingNextPage ? "Loading…" : "Refresh"}
           </Button>
-          {error && (
-            <Button variant="outlined" color="error" onClick={() => refetch()}>
-              Retry
-            </Button>
-          )}
-        </Stack>
+        )}
       </Stack>
 
       {error && (
