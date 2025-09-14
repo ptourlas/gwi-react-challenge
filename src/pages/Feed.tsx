@@ -75,7 +75,7 @@ export default function Feed() {
   );
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth={false} sx={{ py: 4 }}>
       <Stack
         direction="row"
         alignItems="center"
@@ -111,31 +111,31 @@ export default function Feed() {
       <ImageList variant="masonry" cols={columnNumber} gap={8}>
         {isLoading
           ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
-            <Box key={`skeleton-${i}`}>
-              <Skeleton variant="rounded" height={240} />
-            </Box>
+              <Box key={`skeleton-${i}`}>
+                <Skeleton variant="rounded" height={240} />
+              </Box>
             ))
           : images.map((img) => (
-            <ImageListItem key={img.id}>
-              <Box
-                component={Link}
-                to={`/images/${img.id}`}
-                state={{ backgroundLocation: location }}
-              >
+              <ImageListItem key={img.id}>
                 <Box
-                  component="img"
-                  src={img.url}
-                  alt="Cat"
-                  loading="lazy"
-                  sx={{
+                  component={Link}
+                  to={`/images/${img.id}`}
+                  state={{ backgroundLocation: location }}
+                >
+                  <Box
+                    component="img"
+                    src={img.url}
+                    alt="Cat"
+                    loading="lazy"
+                    sx={{
                       borderRadius: 2,
-                    width: "100%",
-                  }}
-                />
-              </Box>
-            </ImageListItem>
-          ))}
-        </ImageList>
+                      width: "100%",
+                    }}
+                  />
+                </Box>
+              </ImageListItem>
+            ))}
+      </ImageList>
 
       {/* Bottom controls */}
       <Stack alignItems="center" mt={3}>
