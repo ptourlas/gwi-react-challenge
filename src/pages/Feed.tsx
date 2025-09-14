@@ -82,7 +82,7 @@ export default function Feed() {
         mb={2}
       >
         <Typography variant="h4" component="h1">
-          Random Cats
+          Gallery
         </Typography>
 
         {error ? (
