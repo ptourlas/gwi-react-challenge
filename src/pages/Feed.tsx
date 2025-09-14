@@ -1,4 +1,3 @@
-// src/pages/Feed.tsx
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -16,6 +15,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 
 type Breed = { id: string; name: string };
 type CatImage = { id: string; url: string; breeds?: Breed[] };
@@ -72,6 +72,15 @@ export default function Feed() {
     () => (data?.pages ?? []).flat(),
     [data?.pages]
   );
+
+  const { setRef } = useInfiniteScroll({
+    onLoadMore: () => fetchNextPage(),
+    disabled: isFetchingNextPage || isLoading,
+    hasMore: hasNextPage ?? true,
+    root: null,
+    rootMargin: "1px",
+    threshold: 0,
+  });
 
   return (
     <Container maxWidth={false} sx={{ py: 4 }}>
@@ -134,6 +143,9 @@ export default function Feed() {
               </ImageListItem>
             ))}
       </ImageList>
+
+      {/* Infinite-scroll sentinel */}
+      <Box ref={setRef} aria-hidden sx={{ height: 1, mt: 2 }} />
 
       {/* Bottom controls */}
       <Stack alignItems="center" mt={3}>
