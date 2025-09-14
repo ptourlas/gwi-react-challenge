@@ -65,7 +65,6 @@ export default function Feed() {
       // We can keep returning a number just to satisfy the API;
       // thecatapi returns random images each time.
       (lastPageParam ?? 0) + 1,
-    staleTime: 0,
     refetchOnWindowFocus: false,
   });
 
