@@ -1,35 +1,64 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { Routes, Route, useLocation } from "react-router";
+import RootLayout from "./layouts/RootLayout";
+import Feed from "./pages/Feed";
+import Breeds from "./pages/Breeds";
+import Favourites from "./pages/Favorites";
+import ImageDetail from "./pages/ImageDetail";
+import BreedGallery from "./pages/BreedGallery";
+import Modal from "./components/Modal";
 
-function App() {
-  const [count, setCount] = useState(0);
+export default function App() {
+  const location = useLocation();
+  const state = location.state as { backgroundLocation?: Location };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {/* 1) Main routes — render with background if present */}
+      <Routes location={state?.backgroundLocation || location}>
+        <Route element={<RootLayout />}>
+          <Route index element={<Feed />} />
+          <Route path="breeds" element={<Breeds />} />
+          <Route path="favourites" element={<Favourites />} />
+
+          {/* Standalone (non-modal) detail pages */}
+          <Route path="images/:imageId" element={<ImageDetail />} />
+          <Route path="breeds/:breedId" element={<BreedGallery />} />
+          <Route
+            path="breeds/:breedId/images/:imageId"
+            element={<ImageDetail />}
+          />
+        </Route>
+      </Routes>
+
+      {/* 2) Modal layer — only renders when we have a background */}
+      {state?.backgroundLocation && (
+        <Routes>
+          <Route
+            path="images/:imageId"
+            element={
+              <Modal title="Image detail">
+                <ImageDetail />
+              </Modal>
+            }
+          />
+          <Route
+            path="breeds/:breedId"
+            element={
+              <Modal title="Breed gallery">
+                <BreedGallery />
+              </Modal>
+            }
+          />
+          <Route
+            path="breeds/:breedId/images/:imageId"
+            element={
+              <Modal title="Image detail">
+                <ImageDetail />
+              </Modal>
+            }
+          />
+        </Routes>
+      )}
     </>
   );
 }
-
-export default App;
