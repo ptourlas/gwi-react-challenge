@@ -14,6 +14,8 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -57,13 +59,9 @@ async function fetchImageById({
 }
 
 export default function ImageDetail() {
+  const theme = useTheme();
   const { imageId = "" } = useParams();
-  const location = useLocation();
-
-  // Preserve the original background when nesting modals
-  const backgroundLocation =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (location.state as any)?.backgroundLocation || location;
+  const isMediumWidth = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["image", imageId],
@@ -142,7 +140,11 @@ export default function ImageDetail() {
 
   return (
     <Container maxWidth={false} sx={{ py: 2 }}>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction={isMediumWidth ? "column" : "row"}
+        spacing={1}
+        alignItems="center"
+      >
         <Stack direction="column" spacing={1} alignItems="center">
           <Box
             component="img"
@@ -162,52 +164,7 @@ export default function ImageDetail() {
         <Divider sx={{ mb: 2 }} />
 
         {breed ? (
-          <Stack spacing={1.5}>
-            <Typography variant="h6" component="h2">
-              {breed.name}
-            </Typography>
-
-            <Stack direction="column" spacing={1} flexWrap="wrap">
-              {breed.origin && (
-                <Chip size="small" label={`Origin: ${breed.origin}`} />
-              )}
-              {breed.temperament && (
-                <Chip
-                  size="small"
-                  label={`Temperament: ${breed.temperament}`}
-                />
-              )}
-            </Stack>
-
-            {breed.description && (
-              <Typography variant="body1" sx={{ mt: 0.5 }}>
-                {breed.description}
-              </Typography>
-            )}
-
-            <Stack direction="row" spacing={2} mt={1}>
-              <Button
-                component={RouterLink}
-                to={`/breeds/${breed.id}`}
-                state={{ backgroundLocation }}
-                variant="outlined"
-                size="small"
-              >
-                View breed gallery
-              </Button>
-              {breed.wikipedia_url && (
-                <Button
-                  component={Link}
-                  href={breed.wikipedia_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  size="small"
-                >
-                  Wikipedia
-                </Button>
-              )}
-            </Stack>
-          </Stack>
+          <BreedInfoAndActions breed={breed} />
         ) : (
           <Typography variant="body1">
             No breed information available for this image.
@@ -230,38 +187,104 @@ const ImageActions = ({
   data: ImageById | undefined;
   handleToggleFavourite: () => void;
   copyLink: () => void;
-}) => (
-  <>
-    <Stack direction="row" spacing={1} alignItems="center">
-      <Tooltip title={fav ? "Remove from favourites" : "Add to favourites"}>
-        <IconButton
-          onClick={handleToggleFavourite}
-          aria-label={fav ? "Remove from favourites" : "Add to favourites"}
-          color={fav ? "error" : "default"}
-        >
-          {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-        </IconButton>
-      </Tooltip>
+}) => {
+  const FavoritesButton = () => (
+    <Tooltip title={fav ? "Remove from favourites" : "Add to favourites"}>
+      <IconButton
+        onClick={handleToggleFavourite}
+        aria-label={fav ? "Remove from favourites" : "Add to favourites"}
+        color={fav ? "error" : "default"}
+      >
+        {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+      </IconButton>
+    </Tooltip>
+  );
 
-      <Tooltip title={copied ? "Copied!" : "Copy link"}>
-        <span>
-          <IconButton onClick={copyLink} aria-label="Copy link">
-            <ContentCopyIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
-
-      <Tooltip title="Open original">
-        <IconButton
-          component={Link}
-          href={data?.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Open original image"
-        >
-          <OpenInNewIcon />
+  const CopyButton = () => (
+    <Tooltip title={copied ? "Copied!" : "Copy link"}>
+      <span>
+        <IconButton onClick={copyLink} aria-label="Copy link">
+          <ContentCopyIcon />
         </IconButton>
-      </Tooltip>
+      </span>
+    </Tooltip>
+  );
+
+  const OpenOriginalButton = () => (
+    <Tooltip title="Open original">
+      <IconButton
+        component={Link}
+        href={data?.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Open original image"
+      >
+        <OpenInNewIcon />
+      </IconButton>
+    </Tooltip>
+  );
+
+  return (
+    <>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <FavoritesButton />
+        <CopyButton />
+        <OpenOriginalButton />
+      </Stack>
+    </>
+  );
+};
+
+const BreedInfoAndActions = ({ breed }: { breed: Breed }) => {
+  const location = useLocation();
+  // Preserve the original background when nesting modals
+  const backgroundLocation =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (location.state as any)?.backgroundLocation || location;
+
+  return (
+    <Stack spacing={1.5}>
+      <Typography variant="h6" component="h2">
+        {breed.name}
+      </Typography>
+
+      <Stack direction="column" spacing={1} flexWrap="wrap">
+        {breed.origin && (
+          <Chip size="small" label={`Origin: ${breed.origin}`} />
+        )}
+        {breed.temperament && (
+          <Chip size="small" label={`Temperament: ${breed.temperament}`} />
+        )}
+      </Stack>
+
+      {breed.description && (
+        <Typography variant="body1" sx={{ mt: 0.5 }}>
+          {breed.description}
+        </Typography>
+      )}
+
+      <Stack direction="row" spacing={2} mt={1}>
+        <Button
+          component={RouterLink}
+          to={`/breeds/${breed.id}`}
+          state={{ backgroundLocation }}
+          variant="outlined"
+          size="small"
+        >
+          View breed gallery
+        </Button>
+        {breed.wikipedia_url && (
+          <Button
+            component={Link}
+            href={breed.wikipedia_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            size="small"
+          >
+            Wikipedia
+          </Button>
+        )}
+      </Stack>
     </Stack>
-  </>
-);
+  );
+};
