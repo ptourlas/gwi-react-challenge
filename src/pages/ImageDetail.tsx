@@ -236,6 +236,9 @@ const ImageActions = ({
 };
 
 const BreedInfoAndActions = ({ breed }: { breed: Breed }) => {
+  const theme = useTheme();
+  const isMediumWidth = useMediaQuery(theme.breakpoints.down("md"));
+
   const location = useLocation();
   // Preserve the original background when nesting modals
   const backgroundLocation =
@@ -248,7 +251,11 @@ const BreedInfoAndActions = ({ breed }: { breed: Breed }) => {
         {breed.name}
       </Typography>
 
-      <Stack direction="column" spacing={1} flexWrap="wrap">
+      <Stack
+        direction={isMediumWidth ? "column" : "row"}
+        spacing={1}
+        flexWrap="wrap"
+      >
         {breed.origin && (
           <Chip size="small" label={`Origin: ${breed.origin}`} />
         )}
