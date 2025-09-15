@@ -96,6 +96,14 @@ export default function ImageDetail() {
     }
   };
 
+  const imageActionsProps = {
+    data,
+    fav,
+    copied,
+    copyLink,
+    handleToggleFavourite,
+  };
+
   if (isLoading) {
     return (
       <Container maxWidth="md" sx={{ py: 2 }}>
@@ -133,117 +141,127 @@ export default function ImageDetail() {
   const breed = data.breeds?.[0];
 
   return (
-    <Container maxWidth="md" sx={{ py: 2 }}>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={1}
-      >
-        <Typography variant="h5" component="h1">
-          Image Detail
-        </Typography>
-
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Tooltip title={fav ? "Remove from favourites" : "Add to favourites"}>
-            <IconButton
-              onClick={handleToggleFavourite}
-              aria-label={fav ? "Remove from favourites" : "Add to favourites"}
-              color={fav ? "error" : "default"}
-            >
-              {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title={copied ? "Copied!" : "Copy link"}>
-            <span>
-              <IconButton onClick={copyLink} aria-label="Copy link">
-                <ContentCopyIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-
-          <Tooltip title="Open original">
-            <IconButton
-              component={Link}
-              href={data.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Open original image"
-            >
-              <OpenInNewIcon />
-            </IconButton>
-          </Tooltip>
+    <Container maxWidth={false} sx={{ py: 2 }}>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="column" spacing={1} alignItems="center">
+          <Box
+            component="img"
+            src={data.url}
+            alt={breed ? `${breed.name} cat` : "Cat"}
+            loading="eager"
+            sx={{
+              width: "100%",
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          />
+          <ImageActions {...imageActionsProps} />
         </Stack>
-      </Stack>
 
-      <Box
-        component="img"
-        src={data.url}
-        alt={breed ? `${breed.name} cat` : "Cat"}
-        loading="eager"
-        sx={{
-          width: "100%",
-          height: "auto",
-          display: "block",
-          borderRadius: 2,
-          border: "1px solid",
-          borderColor: "divider",
-          mb: 2,
-        }}
-      />
+        <Divider sx={{ mb: 2 }} />
 
-      <Divider sx={{ mb: 2 }} />
-
-      {breed ? (
-        <Stack spacing={1.5}>
-          <Typography variant="h6" component="h2">
-            {breed.name}
-          </Typography>
-
-          <Stack direction="row" spacing={1} flexWrap="wrap">
-            {breed.origin && (
-              <Chip size="small" label={`Origin: ${breed.origin}`} />
-            )}
-            {breed.temperament && (
-              <Chip size="small" label={`Temperament: ${breed.temperament}`} />
-            )}
-          </Stack>
-
-          {breed.description && (
-            <Typography variant="body1" sx={{ mt: 0.5 }}>
-              {breed.description}
+        {breed ? (
+          <Stack spacing={1.5}>
+            <Typography variant="h6" component="h2">
+              {breed.name}
             </Typography>
-          )}
 
-          <Stack direction="row" spacing={2} mt={1}>
-            <Button
-              component={RouterLink}
-              to={`/breeds/${breed.id}`}
-              state={{ backgroundLocation }}
-              variant="outlined"
-              size="small"
-            >
-              View breed gallery
-            </Button>
-            {breed.wikipedia_url && (
+            <Stack direction="column" spacing={1} flexWrap="wrap">
+              {breed.origin && (
+                <Chip size="small" label={`Origin: ${breed.origin}`} />
+              )}
+              {breed.temperament && (
+                <Chip
+                  size="small"
+                  label={`Temperament: ${breed.temperament}`}
+                />
+              )}
+            </Stack>
+
+            {breed.description && (
+              <Typography variant="body1" sx={{ mt: 0.5 }}>
+                {breed.description}
+              </Typography>
+            )}
+
+            <Stack direction="row" spacing={2} mt={1}>
               <Button
-                component={Link}
-                href={breed.wikipedia_url}
-                target="_blank"
-                rel="noopener noreferrer"
+                component={RouterLink}
+                to={`/breeds/${breed.id}`}
+                state={{ backgroundLocation }}
+                variant="outlined"
                 size="small"
               >
-                Wikipedia
+                View breed gallery
               </Button>
-            )}
+              {breed.wikipedia_url && (
+                <Button
+                  component={Link}
+                  href={breed.wikipedia_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  size="small"
+                >
+                  Wikipedia
+                </Button>
+              )}
+            </Stack>
           </Stack>
-        </Stack>
-      ) : (
-        <Typography variant="body1">
-          No breed information available for this image.
-        </Typography>
-      )}
+        ) : (
+          <Typography variant="body1">
+            No breed information available for this image.
+          </Typography>
+        )}
+      </Stack>
     </Container>
   );
 }
+
+const ImageActions = ({
+  fav,
+  handleToggleFavourite,
+  copied,
+  copyLink,
+  data,
+}: {
+  fav: boolean;
+  copied: boolean;
+  data: ImageById | undefined;
+  handleToggleFavourite: () => void;
+  copyLink: () => void;
+}) => (
+  <>
+    <Stack direction="row" spacing={1} alignItems="center">
+      <Tooltip title={fav ? "Remove from favourites" : "Add to favourites"}>
+        <IconButton
+          onClick={handleToggleFavourite}
+          aria-label={fav ? "Remove from favourites" : "Add to favourites"}
+          color={fav ? "error" : "default"}
+        >
+          {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip title={copied ? "Copied!" : "Copy link"}>
+        <span>
+          <IconButton onClick={copyLink} aria-label="Copy link">
+            <ContentCopyIcon />
+          </IconButton>
+        </span>
+      </Tooltip>
+
+      <Tooltip title="Open original">
+        <IconButton
+          component={Link}
+          href={data?.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open original image"
+        >
+          <OpenInNewIcon />
+        </IconButton>
+      </Tooltip>
+    </Stack>
+  </>
+);
