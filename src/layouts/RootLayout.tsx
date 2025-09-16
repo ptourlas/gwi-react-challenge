@@ -61,7 +61,7 @@ export default function RootLayout() {
         {isFetching ? <LinearProgress color="secondary" /> : null}
 
         <Toolbar>
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack direction="row" alignItems="top" spacing={1}>
             <PetsIcon />
             <Typography
               variant="h6"
