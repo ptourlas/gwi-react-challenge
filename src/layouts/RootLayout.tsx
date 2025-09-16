@@ -48,27 +48,7 @@ export default function RootLayout() {
       }}
     >
       {/* Skip link for accessibility */}
-      <Box
-        component="a"
-        href="#main"
-        sx={{
-          position: "absolute",
-          left: -10000,
-          top: "auto",
-          width: 1,
-          height: 1,
-          overflow: "hidden",
-          "&:focus": {
-            position: "static",
-            width: "auto",
-            height: "auto",
-            p: 1,
-            bgcolor: "background.paper",
-          },
-        }}
-      >
-        Skip to content
-      </Box>
+      <AccessibilityLink />
 
       <AppBar position="sticky" color="primary" enableColorOnDark>
         {isFetching ? <LinearProgress color="secondary" /> : null}
@@ -124,3 +104,28 @@ export default function RootLayout() {
     </Box>
   );
 }
+
+const AccessibilityLink = () => (
+  <Box
+    component="a"
+    href="#main"
+    sx={{
+      position: "absolute",
+      left: -10000,
+      top: "auto",
+      width: 1,
+      height: 1,
+      overflow: "hidden",
+      "&:focus": {
+        position: "static",
+        width: "auto",
+        height: "auto",
+        p: 1,
+        bgcolor: "background.paper",
+      },
+    }}
+  >
+    Skip to content
+  </Box>
+);
+
