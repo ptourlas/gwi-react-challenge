@@ -81,7 +81,7 @@ export default function BreedGallery() {
   const breedName = nameFromCache || nameFromImages || breedId;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 4 }}>
       <Stack
         direction="row"
         alignItems="center"
