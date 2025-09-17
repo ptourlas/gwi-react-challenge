@@ -83,7 +83,7 @@ export default function Feed() {
   });
 
   return (
-    <Container maxWidth={false} sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 4 }}>
       <Stack
         direction="row"
         alignItems="center"
