@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import {
   Alert,
   Box,
@@ -40,7 +40,8 @@ async function fetchBreeds({ signal }: { signal?: AbortSignal }) {
 
 export default function Breeds() {
   const location = useLocation();
-  const [query, setQuery] = useState("");
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("search") ?? "");
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["breeds"],

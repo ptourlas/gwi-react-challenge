@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Link as RouterLink, useLocation, useParams } from "react-router";
+import {
+  Link as RouterLink,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   Alert,
@@ -240,13 +245,18 @@ const ImageActions = ({
 
 const BreedInfoAndActions = ({ breed }: { breed: Breed }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   // Preserve the original background when nesting modals
   const backgroundLocation =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (location.state as any)?.backgroundLocation || location;
 
-  const getFlag = (breed: Breed) =>
+  const getFlag = () =>
     breed.country_code ? countryCodeEmoji(breed.country_code) : "";
+
+  const navigateToBreedOrigin = () =>
+    breed.origin ? navigate(`/breeds?search=${breed.origin}`) : null;
 
   return (
     <Stack spacing={1.5}>
@@ -256,10 +266,13 @@ const BreedInfoAndActions = ({ breed }: { breed: Breed }) => {
 
       <Stack direction="column" spacing={1} flexWrap="wrap">
         {breed.origin && (
-          <Chip
-            size="small"
-            label={`Origin: ${getFlag(breed)}  ${breed.origin}`}
-          />
+          <div onClick={navigateToBreedOrigin}>
+            <Chip
+              clickable
+              size="small"
+              label={`Origin: ${getFlag()} ${breed.origin}`}
+            />
+          </div>
         )}
         {breed.temperament && (
           <Chip size="small" label={`Temperament: ${breed.temperament}`} />
