@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router";
 import {
   Alert,
@@ -11,7 +11,6 @@ import {
   ListItemButton,
   ListItemText,
   Skeleton,
-  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -64,55 +63,31 @@ export default function Breeds() {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={2}
-      >
+      <StickyTop>
         <Typography variant="h4" component="h1">
           Breeds
         </Typography>
-      </Stack>
 
-      <TextField
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search breeds, origin, temperament…"
-        fullWidth
-        size="small"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon fontSize="small" />
-            </InputAdornment>
-          ),
-        }}
-        sx={{ mb: 2 }}
-      />
+        <TextField
+          fullWidth
+          size="small"
+          value={query}
+          sx={{ mt: 2, mb: 2 }}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by breed name, origin, temperament…"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
 
-      {error && (
-        <Alert
-          severity="error"
-          sx={{ mb: 2 }}
-          action={
-            <Box
-              component="button"
-              onClick={() => refetch()}
-              style={{
-                all: "unset",
-                cursor: "pointer",
-                color: "inherit",
-                fontWeight: 600,
-              }}
-            >
-              Retry
-            </Box>
-          }
-        >
-          {(error as Error)?.message || "Failed to load breeds"}
-        </Alert>
-      )}
+        {error && <RetryFetchButton error={error} refetch={refetch} />}
+      </StickyTop>
 
       {isLoading ? (
         <List disablePadding>
@@ -159,3 +134,48 @@ export default function Breeds() {
     </Container>
   );
 }
+
+const RetryFetchButton = ({
+  error,
+  refetch,
+}: {
+  error: Error;
+  refetch: () => void;
+}) => (
+  <Alert
+    severity="error"
+    sx={{ mb: 2, alignItems: "center" }}
+    action={
+      <Box
+        component="button"
+        onClick={() => refetch()}
+        style={{
+          all: "unset",
+          cursor: "pointer",
+          color: "inherit",
+          fontWeight: 600,
+        }}
+      >
+        Retry
+      </Box>
+    }
+  >
+    {(error as Error)?.message || "Failed to load breeds"}
+  </Alert>
+);
+
+const StickyTop = ({ children }: { children: ReactNode }) => (
+  <Box
+    sx={{
+      py: 2,
+      top: 1,
+      borderBottom: 1,
+      bgcolor: "white",
+      position: "sticky",
+      borderColor: "divider",
+      zIndex: (t) => t.zIndex.appBar - 1,
+    }}
+  >
+    {children}
+  </Box>
+);
