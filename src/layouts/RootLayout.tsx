@@ -83,14 +83,7 @@ export default function RootLayout() {
         <Outlet />
       </Box>
 
-      {/* Optional footer */}
-      <Box component="footer" sx={{ py: 4 }}>
-        <Container maxWidth="md">
-          <Typography variant="body2" color="text.secondary" align="center">
-            Powered by TheCatAPI • Built with React Router, React Query & MUI
-          </Typography>
-        </Container>
-      </Box>
+      <Footer />
     </Box>
   );
 }
@@ -116,6 +109,26 @@ const AccessibilityLink = () => (
     }}
   >
     Skip to content
+  </Box>
+);
+
+const Footer = () => (
+  <Box
+    component="footer"
+    sx={{
+      position: "fixed",
+      bottom: 0,
+      width: "inherit",
+      py: 2,
+      backgroundColor: "white",
+      boxShadow: "0px -8px 20px lightgrey",
+    }}
+  >
+    <Container maxWidth="md">
+      <Typography variant="body2" color="text.secondary" align="center">
+        Powered by TheCatAPI • Built with React Router, React Query & MUI
+      </Typography>
+    </Container>
   </Box>
 );
 
