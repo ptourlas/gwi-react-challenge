@@ -22,6 +22,8 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useFavourites } from "../store/useFavorites";
+//@ts-expect-error NO TYPES AVAILABLE
+import { countryCodeEmoji } from "country-code-emoji";
 
 type Breed = {
   id: string;
@@ -30,6 +32,7 @@ type Breed = {
   temperament?: string;
   description?: string;
   wikipedia_url?: string;
+  country_code?: string;
 };
 
 type ImageById = {
@@ -236,14 +239,14 @@ const ImageActions = ({
 };
 
 const BreedInfoAndActions = ({ breed }: { breed: Breed }) => {
-  const theme = useTheme();
-  const isMediumWidth = useMediaQuery(theme.breakpoints.down("md"));
-
   const location = useLocation();
   // Preserve the original background when nesting modals
   const backgroundLocation =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (location.state as any)?.backgroundLocation || location;
+
+  const getFlag = (breed: Breed) =>
+    breed.country_code ? countryCodeEmoji(breed.country_code) : "";
 
   return (
     <Stack spacing={1.5}>
@@ -251,13 +254,12 @@ const BreedInfoAndActions = ({ breed }: { breed: Breed }) => {
         {breed.name}
       </Typography>
 
-      <Stack
-        direction={isMediumWidth ? "column" : "row"}
-        spacing={1}
-        flexWrap="wrap"
-      >
+      <Stack direction="column" spacing={1} flexWrap="wrap">
         {breed.origin && (
-          <Chip size="small" label={`Origin: ${breed.origin}`} />
+          <Chip
+            size="small"
+            label={`Origin: ${getFlag(breed)}  ${breed.origin}`}
+          />
         )}
         {breed.temperament && (
           <Chip size="small" label={`Temperament: ${breed.temperament}`} />
