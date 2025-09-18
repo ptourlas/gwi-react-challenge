@@ -93,10 +93,10 @@ export default function BreedGallery() {
         </Typography>
         <Button
           variant="outlined"
-          onClick={() => fetchNextPage()}
+          onClick={() => refetch()}
           disabled={isFetchingNextPage || isLoading}
         >
-          {isFetchingNextPage ? "Loading…" : "Load more"}
+          {isFetchingNextPage ? "Loading…" : "Refresh"}
         </Button>
       </Stack>
 
