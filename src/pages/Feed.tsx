@@ -26,7 +26,7 @@ import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 type Breed = { id: string; name: string };
 type CatImage = { id: string; url: string; breeds?: Breed[] };
 
-const API_BASE = "https://api.thecatapi.com/v1";
+const API_BASE = import.meta.env.VITE_API_BASE;
 const PAGE_SIZE = 10;
 
 async function fetchRandomImages({ signal }: { signal?: AbortSignal }) {

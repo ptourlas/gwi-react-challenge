@@ -1,5 +1,3 @@
 import { TheCatAPI } from "@thatapicompany/thecatapi";
 
-export const theCatAPI = new TheCatAPI(
-  "live_wk9wTd4Vt8sqvW6Br9U5ls6Nkf15oFtxYv2cdbOsQOAiaXSNHKaWNMYAVznjFzQg"
-);
+export const theCatAPI = new TheCatAPI(import.meta.env.VITE_API_KEY);

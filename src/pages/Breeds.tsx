@@ -24,7 +24,7 @@ type Breed = {
   temperament?: string;
 };
 
-const API_BASE = "https://api.thecatapi.com/v1";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 async function fetchBreeds({ signal }: { signal?: AbortSignal }) {
   const headers: Record<string, string> = {};
