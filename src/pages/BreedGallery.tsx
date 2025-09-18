@@ -11,6 +11,8 @@ import {
   Skeleton,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -51,11 +53,13 @@ async function fetchBreedImages({
 }
 
 export default function BreedGallery() {
+  const theme = useTheme();
   const { breedId = "" } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
+  const isMediumWidth = useMediaQuery(theme.breakpoints.down("md"));
+  const columnNumber = useMemo(() => (isMediumWidth ? 2 : 3), [isMediumWidth]);
 
-  // Infinite pages of images for the selected breed
   const { data, isLoading, isFetchingNextPage, fetchNextPage, error, refetch } =
     useInfiniteQuery({
       queryKey: ["breed-images", breedId],
@@ -138,7 +142,12 @@ export default function BreedGallery() {
               <Typography>No images found for this breed.</Typography>
             </Box>
           ) : (
-            <ImageList variant="masonry" cols={3} gap={8} sx={{ m: 0 }}>
+            <ImageList
+              variant="masonry"
+              cols={columnNumber}
+              gap={8}
+              sx={{ m: 0 }}
+            >
               {images.map((img) => (
                 <ImageListItem key={img.id}>
                   <Box
