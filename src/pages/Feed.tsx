@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
+import { uniqueById } from "../utils/uniqueById";
+
 import {
   Alert,
   Box,
@@ -68,13 +74,35 @@ export default function Feed() {
     refetchOnWindowFocus: false,
   });
 
-  const images: CatImage[] = useMemo(
-    () => (data?.pages ?? []).flat(),
+  const qc = useQueryClient();
+
+  const images = useMemo(
+    () => uniqueById((data?.pages ?? []).flat()),
     [data?.pages]
   );
 
+  async function loadMoreUniques(minNew = 6, maxTries = 3) {
+    let tries = 0;
+    const before = new Set(images.map((i) => i.id));
+
+    while (tries < maxTries) {
+      await fetchNextPage();
+
+      const latest = (
+        qc.getQueryData<InfiniteData<CatImage, unknown>>(["random-cats"])
+          ?.pages ?? []
+      ).flat();
+
+      const after = new Set(latest.map((i: CatImage) => i.id));
+      const newCount = [...after].filter((id) => !before.has(id)).length;
+
+      if (newCount >= minNew) break;
+      tries++;
+    }
+  }
+
   const { setRef } = useInfiniteScroll({
-    onLoadMore: () => fetchNextPage(),
+    onLoadMore: () => loadMoreUniques(),
     disabled: isFetchingNextPage || isLoading,
     hasMore: hasNextPage ?? true,
     root: null,
